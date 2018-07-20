@@ -1,4 +1,4 @@
-package com.example.retita.topquiz;
+package com.example.retita.topquiz.Controller;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,11 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.retita.topquiz.Model.User;
+import com.example.retita.topquiz.R;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
     private EditText editText;
     private Button button;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         textView = (TextView)findViewById(R.id.text_view_id);
         editText = (EditText)findViewById(R.id.edit_tewt_id);
         button = (Button)findViewById(R.id.button_id);
+        user = new User();
 
         //désactiver le boutton
         button.setEnabled(false);
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                user.setFirstName(editText.getText().toString());
                 Intent gameActivity = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(gameActivity);
             }
