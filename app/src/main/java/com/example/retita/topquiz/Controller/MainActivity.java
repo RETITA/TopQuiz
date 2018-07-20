@@ -1,6 +1,7 @@
 package com.example.retita.topquiz.Controller;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private Button button;
     private User user;
+    private static final int GAME_ACTIVITY_REQUEST_CODE = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,17 @@ public class MainActivity extends AppCompatActivity {
         textView = (TextView)findViewById(R.id.text_view_id);
         editText = (EditText)findViewById(R.id.edit_tewt_id);
         button = (Button)findViewById(R.id.button_id);
+
+        String firstname = getPreferences(MODE_PRIVATE).getString("firstname", null);
+
+        if(firstname != null){
+            textView.setText("Welcome " + firstname);
+            editText.setText(firstname);
+        }else {
+            textView.setText("Welcome");
+        }
+
+
         user = new User();
 
         //désactiver le boutton
@@ -54,9 +67,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 user.setFirstName(editText.getText().toString());
+
+                SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+                preferences.edit().putString("firstname", user.getFirstName()).apply();
+
                 Intent gameActivity = new Intent(MainActivity.this, GameActivity.class);
-                startActivity(gameActivity);
+                startActivityForResult(gameActivity,GAME_ACTIVITY_REQUEST_CODE);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (GAME_ACTIVITY_REQUEST_CODE == requestCode && RESULT_OK == resultCode) {
+
+            // Fetch the score from the Intent
+
+            int score = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE, 0);
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            preferences.edit().putInt("score", score).apply();
+        }
     }
 }
