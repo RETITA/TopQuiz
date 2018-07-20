@@ -28,4 +28,14 @@ public class QuestionBank {
     public void setNextQuestionIndex(int nextQuestionIndex) {
         this.nextQuestionIndex = nextQuestionIndex;
     }
+
+    public Question getQuestion() {
+        // Ensure we loop over the questions
+        if (this.nextQuestionIndex == this.questionList.size()) {
+            this.nextQuestionIndex = 0;
+        }
+
+        // Please note the post-incrementation
+        return this.questionList.get(this.nextQuestionIndex++);
+    }
 }

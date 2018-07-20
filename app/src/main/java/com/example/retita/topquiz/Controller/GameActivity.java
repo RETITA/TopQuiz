@@ -1,5 +1,7 @@
 package com.example.retita.topquiz.Controller;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +23,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private Button rep3;
     private Button rep4;
     private TextView question;
+    private int numberOfQuestions;
+    private int score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +36,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         rep3 = (Button)findViewById(R.id.answer3_id);
         rep4 = (Button)findViewById(R.id.answer4_id);
         question = (TextView)findViewById(R.id.question_id);
+        numberOfQuestions = 4;
+        score = 0;
 
         questionBank = this.generateQuestions();
-        displayQuestion(questionBank.getQuestionList().get(0));
+        displayQuestion(questionBank.getQuestion());
 
         rep1.setOnClickListener(this);
         rep2.setOnClickListener(this);
@@ -89,7 +95,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private void displayQuestion(final Question question) {
 
-        // Set the text for the question text view and the four buttons
+        this.question.setText(question.getQuestion());
+        this.rep1.setText(question.getChoiceList().get(0));
+        this.rep2.setText(question.getChoiceList().get(1));
+        this.rep3.setText(question.getChoiceList().get(2));
+        this.rep4.setText(question.getChoiceList().get(3));
 
     }
 
@@ -97,8 +107,29 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         int responseIndex = (int) view.getTag();
 
-        if( responseIndex == questionBank.getQuestionList().get(0).getAnswerIndex()){
+        if( responseIndex == questionBank.getQuestion().getAnswerIndex()){
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+            score += 1;
+            if (-- numberOfQuestions == 0) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Well done!")
+                        .setMessage("Your score is " + score)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .create()
+                        .show();
+
+            } else {
+
+
+                displayQuestion(questionBank.getQuestion());
+
+            }
         }
     }
 }
