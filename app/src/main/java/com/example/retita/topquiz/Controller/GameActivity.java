@@ -112,29 +112,34 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         if( responseIndex == questionBank.getQuestion().getAnswerIndex()){
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
             score += 1;
-            if (-- numberOfQuestions == 0) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Well done!")
-                        .setMessage("Your score is " + score)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent();
-                                intent.putExtra(BUNDLE_EXTRA_SCORE,score);
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            }
-                        })
-                        .create()
-                        .show();
+        }else {
+            Toast.makeText(this, "No Correct!", Toast.LENGTH_SHORT).show();
 
-            } else {
+        }
+
+        if (-- numberOfQuestions == 0) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Well done!")
+                    .setMessage("Your score is " + score)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent();
+                            intent.putExtra(BUNDLE_EXTRA_SCORE,score);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    })
+                    .create()
+                    .show();
+
+        } else {
 
 
-                displayQuestion(questionBank.getQuestion());
+            displayQuestion(questionBank.getQuestion());
 
-            }
         }
     }
 }

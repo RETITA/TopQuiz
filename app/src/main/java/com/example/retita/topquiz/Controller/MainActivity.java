@@ -36,15 +36,16 @@ public class MainActivity extends AppCompatActivity {
         if(firstname != null){
             textView.setText("Welcome " + firstname);
             editText.setText(firstname);
+            button.setEnabled(true);
         }else {
             textView.setText("Welcome");
+            button.setEnabled(false);
         }
 
 
         user = new User();
 
         //désactiver le boutton
-        button.setEnabled(false);
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                editText.setEnabled(charSequence.toString().length() != 0);
+                button.setEnabled(charSequence.toString().length() != 0);
             }
 
             @Override
