@@ -2,9 +2,11 @@ package com.example.retita.topquiz.Controller;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import java.util.Arrays;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private Boolean enableTouchEvent;
     private QuestionBank questionBank;
     private Button rep1;
     private Button rep2;
@@ -26,7 +29,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private TextView question;
     private int numberOfQuestions;
     private int score;
+
     public static final String BUNDLE_EXTRA_SCORE = "BUNDLE_EXTRA_SCORE";
+    public static final String BUNDLE_STATE_SCORE = "currentScore";
+    public static final String BUNDLE_STATE_QUESTION = "currentQuestion";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +44,20 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         rep3 = (Button)findViewById(R.id.answer3_id);
         rep4 = (Button)findViewById(R.id.answer4_id);
         question = (TextView)findViewById(R.id.question_id);
-        numberOfQuestions = 4;
-        score = 0;
+        enableTouchEvent =true;
+
+        if (savedInstanceState != null) {
+
+            score = savedInstanceState.getInt(BUNDLE_STATE_SCORE);
+            numberOfQuestions = savedInstanceState.getInt(BUNDLE_STATE_QUESTION);
+
+        } else {
+
+            score = 0;
+            numberOfQuestions = 4;
+
+        }
+
 
         questionBank = this.generateQuestions();
         displayQuestion(questionBank.getQuestion());
@@ -106,6 +124,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putInt(BUNDLE_STATE_SCORE, score);
+        outState.putInt(BUNDLE_STATE_QUESTION, numberOfQuestions);
+
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public void onClick(View view) {
         int responseIndex = (int) view.getTag();
 
@@ -118,28 +147,92 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         }
 
-        if (-- numberOfQuestions == 0) {
+        enableTouchEvent = false;
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Well done!")
-                    .setMessage("Your score is " + score)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent();
-                            intent.putExtra(BUNDLE_EXTRA_SCORE,score);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                    })
-                    .create()
-                    .show();
+        new Handler().postDelayed(new Runnable() {
 
-        } else {
+            @Override
+
+            public void run() {
+                enableTouchEvent = true;
+
+                if (-- numberOfQuestions == 0) {
+
+                    endGame();
 
 
-            displayQuestion(questionBank.getQuestion());
+                } else {
 
-        }
+
+                    displayQuestion(questionBank.getQuestion());
+
+                }
+
+            }
+
+        }, 2000); // LENGTH_SHORT is usually 2 second long
+
+
+
+    }
+
+    public void endGame(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Well done!")
+                .setMessage("Your score is " + score)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.putExtra(BUNDLE_EXTRA_SCORE,score);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                })
+                .create()
+                .show();
+    }
+
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev) && enableTouchEvent;
+    }
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        System.out.println("GameActivity::onStart()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        System.out.println("GameActivity::onResume()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        System.out.println("GameActivity::onPause()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        System.out.println("GameActivity::onStop()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        System.out.println("GameActivity::onDestroy()");
     }
 }
